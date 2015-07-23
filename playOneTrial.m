@@ -11,7 +11,7 @@ WaitSecs(expmnt.iti);
 trial_end_time = nan;
 stable_gaze_start_time = nan;
 trial_start_time = Screen('Flip',win);
-staticPlus_on_time = 0;
+fixation_on_time = 0;
 target_on_time = 0;
 Snd('Play',expmnt.trialBeep);
 
@@ -38,14 +38,14 @@ while strcmp(state, 'finish') == 0
                 % do we have valid data and is the pupil visible?
                 if x~=elHandle.MISSING_DATA && y~=elHandle.MISSING_DATA && elEvent.pa(eye_used+1)>0.5
                     eyeavail = 1;
-                    eyePos = [x, y] - est_drift;
+                    eyePos = [x, y];
                     
                 else
                     eyeavail = 0;
                     Screen('FillRect',win,backgroundEntry);
                     Screen('Flip',win);
                     if x~=elHandle.MISSING_DATA && y~=elHandle.MISSING_DATA
-                        eyePos = [x, y] - est_drift;
+                        eyePos = [x, y];
                     else
                         eyePos = [nan, nan];
                     end
@@ -81,13 +81,14 @@ while strcmp(state, 'finish') == 0
         oldEyePos=eyePos;
         switch state
             case 'fixation' 
-                if staticPlus_on_time == 0
+                if fixation_on_time == 0
                     Screen('FillRect', win, backgroundEntry);
-                    ST_plus_coord = round(delta_gazeCenter_to_plus(ii,:) + center);%location of the static plus
-                    drawFixation(win,ST_plus_coord, fixationLength, fixationColor); %draw the ecentric plus
-                    drawCross(win,round(center), 2, targColor); %draw the fixation cue
-                    staticPlus_on_time = Screen('Flip',win);
-                elseif (GetSecs - staticPlus_on_time > expmnt.staticPlus_display_time)
+                    ST_fix_coord = round(delta_center_to_fixation(ii,:) + center);%location of the ecentric fixation
+                    drawFixation(win,center, fixationLength, fixationColor); %draw the plus at the center of the screen
+                    drawCross(win,round(ST_fix_coord), 2, fixationColor); %draw the eccentric fixation cue
+                    
+                    fixation_on_time = Screen('Flip',win);
+                elseif (GetSecs - fixation_on_time > expmnt.staticPlus_display_time)
                     state ='show_target';
                 end
                 
@@ -96,7 +97,8 @@ while strcmp(state, 'finish') == 0
                     
                     if target_on_time == 0 || (GetSecs - target_on_time <expmnt.mxTrialDur) %if this is the first time we are in state or we still need to show the target
                         
-                        newEye = round(delta_gazeCenter_to_plus(ii,:) + eyePos);%show the gaze-contingent ecentric plus
+                        newEye = round(eyePos - delta_center_to_fixation(ii,:) );%show the gaze-contingent plus
+                        newEye = newEye - est_drift; %remove the drift 
                         if target_on_time == 0
                             GC_plus_coord = newEye;%for book keeping. the initial location of the gaze contingent plus  
                         end
@@ -104,7 +106,7 @@ while strcmp(state, 'finish') == 0
                         %draw fixation (plus)
                         drawFixation(win,newEye, fixationLength, fixationColor);
                         %                 %draw target (cross)
-                        drawCross(win, round(targetXY(ii,:)), targLength, targColor);
+                        drawCross(win, round(targetXY(ii,:)- est_drift), targLength, targColor);
                         temp = Screen('Flip',win);
                         if target_on_time == 0
                             target_on_time = temp;
@@ -155,7 +157,7 @@ end
 data.stim.trial_start_time(ii) = trial_start_time;
 data.stim.stable_gaze_start_time(ii) = stable_gaze_start_time;
 data.stim.trial_end_time(ii) = trial_end_time;
-data.stim.staticPlus_on_time(ii) = staticPlus_on_time;
+data.stim.fixation_on_time(ii) = fixation_on_time;
 data.stim.target_on_time (ii) = target_on_time;
 data.stim.trial_acquired_time(ii) = trial_acquired_time;
 data.stim.ST_plus_coord(ii,:) = ST_plus_coord;
