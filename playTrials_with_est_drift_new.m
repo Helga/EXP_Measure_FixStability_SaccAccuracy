@@ -10,10 +10,10 @@ tol = (relaxationConst *expmnt.ppd)^2;
 minDur = expmnt.minContactTime;
 mxTrialDur = expmnt.mxTrialDur;
 
-eccMarker_R = expmnt.eccMarker.r;
+eccFix_R = expmnt.eccFix.r;
 target_R = expmnt.target.r;
 %Offset of the fixation from the center
-[x,y] = pol2cart(data.stim.eccMarkerPhi',eccMarker_R);
+[x,y] = pol2cart(data.stim.eccFixPhi',eccFix_R);
 delta_center_to_fixation = round([x,y]*expmnt.ppd);
 data.stim.delta_gazeCenter_to_plus = delta_center_to_fixation;  % in pixel units
 [x,y] = pol2cart(data.stim.tarPhi',target_R);

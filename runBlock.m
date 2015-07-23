@@ -8,13 +8,13 @@ data.eyeTracked = 0;
 % each of the following has nTrial+1 entries.  The first one is the
 % fixation trial (run by playTrial_prep)
 % data.stim.ringIdx = [thisplan(1,2) thisplan(:,2)']; % 0 for the peripheral fixation ring
-data.stim.eccMarkerPhi = [nan thisplan(:,2)']; % 0 for the peripheral fixation ring
+data.stim.eccFixPhi = [nan thisplan(:,2)']; % 0 for the peripheral fixation ring
 data.stim.tarPhi = [nan thisplan(:,3)'];
 data.stim.targXY = nan(length(data.stim.tarPhi),2);
-data.stim.trial_start_time = nan(size(data.stim.eccMarkerPhi)); % trial start time (exp computer time)
-data.stim.stable_gaze_start_time = nan(size(data.stim.eccMarkerPhi)); % stable contact time (exp computer time)
-data.stim.trial_end_time = nan(size(data.stim.eccMarkerPhi)); % trial end time (exp computer time)
-data.stim.trial_acquired_time = nan(size(data.stim.eccMarkerPhi)); % trial end time (exp computer time)
+data.stim.trial_start_time = nan(size(data.stim.eccFixPhi)); % trial start time (exp computer time)
+data.stim.stable_gaze_start_time = nan(size(data.stim.eccFixPhi)); % stable contact time (exp computer time)
+data.stim.trial_end_time = nan(size(data.stim.eccFixPhi)); % trial end time (exp computer time)
+data.stim.trial_acquired_time = nan(size(data.stim.eccFixPhi)); % trial end time (exp computer time)
 
 thisGaze = 1;
 thisStim = 1;

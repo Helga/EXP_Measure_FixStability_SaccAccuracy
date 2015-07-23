@@ -14,6 +14,7 @@ trial_start_time = Screen('Flip',win);
 fixation_on_time = 0;
 target_on_time = 0;
 Snd('Play',expmnt.trialBeep);
+trial_acquired_time = nan;
 
 state = 'fixation'
 % Infinite display loop: the display is updated Whenever "gaze position"
@@ -80,12 +81,12 @@ while strcmp(state, 'finish') == 0
         % Keep track of last gaze position:
         oldEyePos=eyePos;
         switch state
-            case 'fixation' 
+            case 'fixation'
                 if fixation_on_time == 0
                     Screen('FillRect', win, backgroundEntry);
                     ST_fix_coord = round(delta_center_to_fixation(ii,:) + center);%location of the ecentric fixation
                     drawFixation(win,center, fixationLength, fixationColor); %draw the plus at the center of the screen
-                    drawCross(win,round(ST_fix_coord), 2, fixationColor); %draw the eccentric fixation cue
+                    drawFixation(win,round(ST_fix_coord), 2, [255 255 255]); %draw the eccentric fixation cue
                     
                     fixation_on_time = Screen('Flip',win);
                 elseif (GetSecs - fixation_on_time > expmnt.staticPlus_display_time)
@@ -98,23 +99,24 @@ while strcmp(state, 'finish') == 0
                     if target_on_time == 0 || (GetSecs - target_on_time <expmnt.mxTrialDur) %if this is the first time we are in state or we still need to show the target
                         
                         newEye = round(eyePos - delta_center_to_fixation(ii,:) );%show the gaze-contingent plus
-                        newEye = newEye - est_drift; %remove the drift 
+                        newEye = newEye - est_drift; %remove the drift
+                        target_coord = round(targetXY(ii,:)- est_drift);
                         if target_on_time == 0
-                            GC_plus_coord = newEye;%for book keeping. the initial location of the gaze contingent plus  
+                            GC_plus_coord = newEye;%for book keeping. the initial location of the gaze contingent plus
                         end
                         Screen('FillRect', win, backgroundEntry);
                         %draw fixation (plus)
                         drawFixation(win,newEye, fixationLength, fixationColor);
                         %                 %draw target (cross)
-                        drawCross(win, round(targetXY(ii,:)- est_drift), targLength, targColor);
+                        drawCross(win, target_coord, targLength, targColor);
                         temp = Screen('Flip',win);
                         if target_on_time == 0
                             target_on_time = temp;
                         end
                         
-                        distsq = sum((newEye - data.stim.targXY(ii, :)).^2);
+                        distsq = sum((newEye - target_coord ).^2);
                         
-                        if tol >= distsq
+                        if distsq <= tol
                             if ~stableGaze
                                 stableGaze = 1;
                                 stable_gaze_start_time = eyeSampleTime;
@@ -145,9 +147,9 @@ while strcmp(state, 'finish') == 0
             otherwise
                 error('Unknown state!');
         end
-       trial_end_time = GetSecs;
-
-           
+        trial_end_time = GetSecs;
+        
+        
         
     end
     
@@ -160,5 +162,5 @@ data.stim.trial_end_time(ii) = trial_end_time;
 data.stim.fixation_on_time(ii) = fixation_on_time;
 data.stim.target_on_time (ii) = target_on_time;
 data.stim.trial_acquired_time(ii) = trial_acquired_time;
-data.stim.ST_plus_coord(ii,:) = ST_plus_coord;
+data.stim.ST_fix_coord(ii,:) = ST_fix_coord;
 data.stim.GC_plus_coord(ii,:) = GC_plus_coord;

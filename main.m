@@ -39,9 +39,9 @@ if ~exist(dataFileName,'file')
     %Eccentric markers are located on an 8 equally-distanced (pseudorandom)
     %points on a contour. If the radious of the contour is set to zero,
     %markers will appear at the center of the gaze
-    expmnt.eccMarker.length =  .4;
-    expmnt.eccMarker.color =   [127 127 127]%  [0 255 0];    
-    expmnt.eccMarker.r = 6;%degree, distance from center of screen.     
+    expmnt.eccFix.length =  .4;
+    expmnt.eccFix.color =   [127 127 127]%  [0 255 0];    
+    expmnt.eccFix.r = 6;%degree, distance from center of screen.     
     
         
     %% Fixation target (cross)
@@ -68,7 +68,7 @@ if ~exist(dataFileName,'file')
     expmnt.missedBeep  = [sin(2*pi*0.01*(0:2000)) zeros(1,1000) sin(2*pi*0.01*(0:2000))]; % target missed
     expmnt.data = {};
     expmnt.bestTime = inf;
-    expmnt.staticPlus_display_time = 1%.2;%seconds, to show the plus before the target appears
+    expmnt.staticPlus_display_time = 3%.2;%seconds, to show the plus before the target appears
 
     % Eye tracking
     expmnt.useEyeTracker = 1; % real eyetracker (set to 0 for mouse)
